@@ -2,7 +2,7 @@ package site
 
 import (
 	"context"
-	"github.com/Gssssssssy/ns-onsale/internal/task"
+	"github.com/Gssssssssy/ns-stored/internal/task"
 )
 
 const DefaultRetryTimes uint = 3

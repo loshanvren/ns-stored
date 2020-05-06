@@ -1,8 +1,8 @@
 package pipeline
 
 import (
-	"github.com/Gssssssssy/ns-onsale/internal/task"
-	"github.com/Gssssssssy/ns-onsale/pkg/alarm/email"
+	"github.com/Gssssssssy/ns-stored/internal/task"
+	"github.com/Gssssssssy/ns-stored/pkg/alarm/email"
 	"github.com/pkg/errors"
 	"sync"
 )

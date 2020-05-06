@@ -1,5 +1,10 @@
 package task
 
+const (
+	BestBuy Task = 1
+	Target  Task = 2
+)
+
 type Task uint32
 
 type Result struct {
@@ -18,4 +23,3 @@ type Result struct {
 	IsAlarm     bool
 	UpdatedTime string
 }
-

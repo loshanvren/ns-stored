@@ -1,8 +1,8 @@
 package bestbuy_com
 
 import (
-	"github.com/Gssssssssy/ns-onsale/pkg/config"
-	"github.com/Gssssssssy/ns-onsale/pkg/log"
+	"github.com/Gssssssssy/ns-stored/pkg/config"
+	"github.com/Gssssssssy/ns-stored/pkg/log"
 	"github.com/pkg/errors"
 )
 

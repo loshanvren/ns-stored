@@ -2,8 +2,8 @@ package bestbuy_com
 
 import (
 	"context"
-	"github.com/Gssssssssy/ns-onsale/internal/site"
-	"github.com/Gssssssssy/ns-onsale/internal/task"
+	"github.com/Gssssssssy/ns-stored/internal/site"
+	"github.com/Gssssssssy/ns-stored/internal/task"
 	"github.com/gocolly/colly"
 )
 

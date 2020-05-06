@@ -2,7 +2,7 @@ package email
 
 import (
 	"fmt"
-	"github.com/Gssssssssy/ns-onsale/internal/task"
+	"github.com/Gssssssssy/ns-stored/internal/task"
 	"github.com/kr/pretty"
 	"github.com/stretchr/testify/assert"
 	"testing"
