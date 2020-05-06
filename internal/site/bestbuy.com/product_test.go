@@ -6,6 +6,6 @@ import (
 )
 
 func TestDoInquiry(t *testing.T) {
-	result, err := doInquiry(nil, nil)
+	_, err := doInquiry(nil)
 	assert.NoError(t, err)
 }

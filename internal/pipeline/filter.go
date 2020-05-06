@@ -8,14 +8,15 @@ import (
 )
 
 var once sync.Once
-var ResultSet *ResultFilter
+var ResultPipeline *ResultFilter
 
 func init() {
-	ResultSet = NewResultFilter()
+	ResultPipeline = NewResultFilter()
 }
 
 type ResultFilter struct {
 	Chan chan *task.Result
+	wg   sync.WaitGroup
 }
 
 func (tf *ResultFilter) Do() error {
@@ -27,6 +28,10 @@ func (tf *ResultFilter) Do() error {
 		}
 	}
 	return nil
+}
+
+func (tf *ResultFilter) Add(job *task.Result) {
+	tf.Chan <- job
 }
 
 func NewResultFilter() *ResultFilter {

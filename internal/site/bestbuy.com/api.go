@@ -6,23 +6,23 @@ import (
 	"github.com/pkg/errors"
 )
 
-const HOST  = "https://api.bestbuy.com"
+const HOST = "https://api.bestbuy.com"
 
 var Token string
 
 func init() {
-	tk, err := fetchToken()
+	tk, err := token()
 	if err != nil {
 		log.Errorf(nil, errors.Cause(err).Error())
 	}
 	Token = tk
 }
 
-func fetchToken() (token string, err error) {
+func token() (token string, err error) {
 	cfg := config.Config()
 	token = cfg.GetString("bestbuy_developer_key")
 	if token == "" {
-		err = errors.New("BestBuy API Key not found")
+		err = errors.New("bestbuy.com api key not found")
 		return "", errors.WithStack(err)
 	}
 	return token, nil
