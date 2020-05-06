@@ -18,6 +18,7 @@ func init() {
 	Token = tk
 }
 
+// 获取开发者 token
 func token() (token string, err error) {
 	cfg := config.Config()
 	token = cfg.GetString("bestbuy_developer_key")

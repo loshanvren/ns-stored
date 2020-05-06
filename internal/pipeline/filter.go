@@ -1,43 +1,55 @@
 package pipeline
 
 import (
+	"github.com/Gssssssssy/ns-stored/internal/schedule"
 	"github.com/Gssssssssy/ns-stored/internal/task"
 	"github.com/Gssssssssy/ns-stored/pkg/alarm/email"
-	"github.com/pkg/errors"
 	"sync"
+	"time"
 )
 
 var once sync.Once
-var ResultPipeline *ResultFilter
+var ResultPipeline *resultFilterPipeline
 
 func init() {
-	ResultPipeline = NewResultFilter()
+	ResultPipeline = NewResultFilterPipeline()
 }
 
-type ResultFilter struct {
+type resultFilterPipeline struct {
 	Chan chan *task.Result
 	wg   sync.WaitGroup
 }
 
-func (tf *ResultFilter) Do() error {
-	ret := <-tf.Chan
-	if ret.IsAlarm {
-		err := email.ServicePoint.Do(nil, ret)
-		if err != nil {
-			return errors.WithStack(err)
+// Do 永久阻塞，处理采集结果
+func (rfp *resultFilterPipeline) Do() {
+	go func() {
+		for {
+			rfp.wg.Add(1)
+			ret := <-rfp.Chan
+			if ret.IsAlarm {
+				err := email.ServicePoint.Do(nil, ret)
+				if err != nil {
+					panic(err)
+				}
+			}
+			time.Sleep(500 * time.Millisecond)
+			rfp.wg.Done()
 		}
-	}
-	return nil
+	}()
+	rfp.wg.Add(1)
+	rfp.wg.Wait()
 }
 
-func (tf *ResultFilter) Add(job *task.Result) {
-	tf.Chan <- job
+func (rfp *resultFilterPipeline) Add(job *task.Result) {
+	rfp.Chan <- job
 }
 
-func NewResultFilter() *ResultFilter {
-	var tf *ResultFilter
+func NewResultFilterPipeline() *resultFilterPipeline {
+	var rfp *resultFilterPipeline
 	once.Do(func() {
-		tf = &ResultFilter{}
+		rfp = &resultFilterPipeline{
+			Chan: schedule.ResultQueue,
+		}
 	})
-	return tf
+	return rfp
 }

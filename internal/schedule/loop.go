@@ -2,6 +2,12 @@ package schedule
 
 import (
 	"context"
+	"github.com/Gssssssssy/ns-stored/internal/site"
+	bestbuyCom "github.com/Gssssssssy/ns-stored/internal/site/bestbuy.com"
+	"github.com/Gssssssssy/ns-stored/internal/task"
+	"github.com/Gssssssssy/ns-stored/pkg/log"
+	"github.com/pkg/errors"
+	"github.com/robfig/cron"
 	"runtime"
 	"sync"
 )
@@ -11,8 +17,9 @@ type Scheduler struct {
 	cancel context.CancelFunc
 	wg     sync.WaitGroup
 
-	numCPUs uint32
-	pools   *TaskHelper
+	numCPUs        uint32
+	taskPools      *TaskHelper
+	resultPipeline *ResultHelper
 }
 
 func NewScheduler() *Scheduler {
@@ -22,14 +29,37 @@ func NewScheduler() *Scheduler {
 	if runtime.NumCPU() > 1 {
 		sdl.numCPUs = uint32(runtime.NumCPU()) - 1
 	}
-	sdl.pools = new(TaskHelper)
-	//sdl.cron =
+	sdl.taskPools = new(TaskHelper)
+	sdl.resultPipeline = new(ResultHelper)
+
 	return sdl
 }
 
 func (sdl *Scheduler) Start() {
 	// 生成定时任务
-	// 后台启动采集程序
+	c := cron.New()
+	spec := `*/5 * * * * *`
+	// 后台启动采集
+	err := c.AddFunc(spec, func() {
+		var (
+			jobs   = []task.Task{task.BestBuy}
+			jobErr error
+		)
+		for _, job := range jobs {
+			ctx := context.Background()
+			jobErr = sdl.doCollect(ctx, job)
+			if jobErr != nil {
+				log.Errorf(ctx, "run collect job error: %s", jobErr.Error())
+				return
+			}
+		}
+	})
+	if err != nil {
+		return
+	}
+	c.Start()
+	// 永久阻塞
+	select {}
 }
 
 func (sdl *Scheduler) Close() {
@@ -37,6 +67,30 @@ func (sdl *Scheduler) Close() {
 	sdl.wg.Wait()
 }
 
-func (sdl *Scheduler) cronJob() {
+func (sdl *Scheduler) loop() {
 
+}
+
+func (sdl *Scheduler) doCollect(ctx context.Context, t task.Task) error {
+	var (
+		clt    site.Collector
+		err    error
+		result *task.Result
+	)
+	clt = makeFactory(t)
+	result, err = clt.Inquiry(ctx)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	sdl.resultPipeline.Push(result)
+	return nil
+}
+
+func makeFactory(t task.Task) site.Collector {
+	switch t {
+	case task.BestBuy:
+		return bestbuyCom.NewCollector()
+	default:
+		return bestbuyCom.NewCollector()
+	}
 }
