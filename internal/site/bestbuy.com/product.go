@@ -6,10 +6,8 @@ import (
 	"fmt"
 	"github.com/Gssssssssy/ns-stored/internal/site"
 	"github.com/Gssssssssy/ns-stored/internal/task"
-	"github.com/Gssssssssy/ns-stored/pkg/log"
 	"github.com/avast/retry-go"
 	"github.com/gocolly/colly"
-	"github.com/kr/pretty"
 	"github.com/pkg/errors"
 	"strconv"
 	"time"
@@ -75,7 +73,7 @@ func doInquiry(_ context.Context) (*task.Result, error) {
 			default:
 			}
 			result.UpdatedTime = time.Now().Format("2006-01-02 15:04:05")
-			log.Infof(nil, "%# v\n", pretty.Formatter(result))
+			//log.Infof(nil, "%# v\n", pretty.Formatter(result))
 		}
 	})
 	err = retry.Do(func() error {

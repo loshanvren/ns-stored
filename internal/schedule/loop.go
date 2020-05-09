@@ -52,12 +52,13 @@ func (sdl *Scheduler) Start() {
 		)
 		for _, job := range jobs {
 			ctx := context.Background()
-			log.Infof(ctx, "collecting to crawl %s data...", job.String())
+			log.Infof(ctx, "start collector! %s data...", job.String())
 			jobErr = sdl.doCollect(ctx, job)
 			if jobErr != nil {
 				log.Errorf(ctx, "run collect job error: %s", jobErr.Error())
 				return
 			}
+			log.Infof(ctx, "done collector! %s data...", job.String())
 		}
 	})
 	if err != nil {
