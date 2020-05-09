@@ -76,7 +76,7 @@ func (s *Sender) Do(_ context.Context, result *task.Result) error {
 func generateTextContent(result *task.Result) (string, error) {
 	rootPath := cfg.GetString("root_path")
 	if rootPath == "" {
-		rootPath = "/ns"
+		rootPath = "/opt/ns-stored"
 	}
 	buf := bytes.NewBuffer([]byte{})
 	tplPath := path.Join(rootPath, "asset", "static", "email_template.xhtml")

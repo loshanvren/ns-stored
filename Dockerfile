@@ -22,6 +22,8 @@ WORKDIR /opt/ns-stored/bin
 
 COPY --from=BuildImage /gopath/src/github.com/ns-stored/bin/ns-stored /opt/ns-stored/bin/
 COPY --from=BuildImage /gopath/src/github.com/ns-stored/env.yaml /opt/ns-stored/
+COPY --from=BuildImage /gopath/src/github.com/ns-stored/asset /opt/ns-stored/asset
+
 RUN chmod +x /opt/ns-stored/bin/ns-stored
 
 CMD /opt/ns-stored/bin/ns-stored

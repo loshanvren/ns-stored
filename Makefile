@@ -1,4 +1,4 @@
-default: build run
+default: build run clean
 
 PROOT=$(shell pwd)
 
@@ -9,3 +9,10 @@ build:
 run:
 	@echo "run application with docker"
 	docker run --restart=always -dit --name ns-serv ns-stored:latest
+
+stop:
+	@echo "stop application with docker"
+	docker stop ns-serv
+
+clean: stop
+	docker container rm ns-serv
