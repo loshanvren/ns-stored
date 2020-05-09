@@ -73,6 +73,7 @@ func doInquiry(_ context.Context) (*task.Result, error) {
 			default:
 			}
 			result.UpdatedTime = time.Now().Format("2006-01-02 15:04:05")
+			//log.Infof(nil, "%# v\n", pretty.Formatter(result))
 		}
 	})
 	err = retry.Do(func() error {
