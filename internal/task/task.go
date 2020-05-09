@@ -7,6 +7,17 @@ const (
 
 type Task uint32
 
+func (tk Task) String() string {
+	switch tk {
+	case BestBuy:
+		return "bestbuy.com"
+	case Target:
+		return "target.com"
+	default:
+		return ""
+	}
+}
+
 type Result struct {
 	// 黑色
 	Name1      string

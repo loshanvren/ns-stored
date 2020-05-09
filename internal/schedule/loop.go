@@ -2,10 +2,12 @@ package schedule
 
 import (
 	"context"
+	"fmt"
 	"github.com/Gssssssssy/ns-stored/internal/queue"
 	"github.com/Gssssssssy/ns-stored/internal/site"
 	bestbuyCom "github.com/Gssssssssy/ns-stored/internal/site/bestbuy.com"
 	"github.com/Gssssssssy/ns-stored/internal/task"
+	"github.com/Gssssssssy/ns-stored/pkg/config"
 	"github.com/Gssssssssy/ns-stored/pkg/log"
 	"github.com/pkg/errors"
 	"github.com/robfig/cron"
@@ -37,7 +39,11 @@ func NewScheduler() *Scheduler {
 func (sdl *Scheduler) Start() {
 	// 生成定时任务
 	c := cron.New()
-	spec := `*/5 * * * * *`
+	iv := 5
+	if config.GetInt("inquiry_interval") != 0 {
+		iv = config.GetInt("inquiry_interval")
+	}
+	spec := fmt.Sprintf(`*/%d * * * * *`, iv)
 	// 后台启动采集
 	err := c.AddFunc(spec, func() {
 		var (
@@ -46,7 +52,7 @@ func (sdl *Scheduler) Start() {
 		)
 		for _, job := range jobs {
 			ctx := context.Background()
-			log.Infof(ctx, "starting collector-%v", job)
+			log.Infof(ctx, "starting collector to crawl %s ...", job.String())
 			jobErr = sdl.doCollect(ctx, job)
 			if jobErr != nil {
 				log.Errorf(ctx, "run collect job error: %s", jobErr.Error())
