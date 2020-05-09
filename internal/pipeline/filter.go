@@ -11,8 +11,11 @@ import (
 var once sync.Once
 var DataFilter *dataFilter
 
+const emailLimitCount uint32 = 2
+
 type dataFilter struct {
 	resultQ *queue.ResultQ
+	emCnt   uint32
 }
 
 // Do 永久阻塞，处理采集结果
@@ -20,11 +23,14 @@ func (df *dataFilter) Do() (err error) {
 	job := df.resultQ.Get()
 	if job != nil {
 		if job.IsAlarm {
-			err = email.ServicePoint.Do(nil, job)
-			if err != nil {
-				return errors.WithStack(err)
+			if df.emCnt < emailLimitCount {
+				err = email.ServicePoint.Do(nil, job)
+				if err != nil {
+					return errors.WithStack(err)
+				}
+				log.Infof(nil, "send email succeed, job=%v", job)
 			}
-			log.Infof(nil, "send email succeed, job=%v", job)
+			df.emCnt++
 		}
 	}
 	return nil

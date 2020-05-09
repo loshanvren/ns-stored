@@ -82,8 +82,7 @@ func readViperConfig(configName string) *viper.Viper {
 	v.AddConfigPath(".")                // optionally look for config in the working directory
 	v.AddConfigPath("$HOME/.ns-stored") // call multiple times to add many search paths
 	v.AddConfigPath("/etc/ns-stored")   // path to look for the config file in
-	v.AddConfigPath("$GOPATH/src/github.com/Gssssssssy/ns-stored")
-	v.AddConfigPath("/opt/ns-stored")
+	v.AddConfigPath("/opt/ns-stored")   // container path
 
 	err := v.ReadInConfig() // Find and read the config file
 	if err != nil {         // Handle errors reading the config file
