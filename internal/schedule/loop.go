@@ -47,18 +47,13 @@ func (sdl *Scheduler) Start() {
 	// 后台启动采集
 	err := c.AddFunc(spec, func() {
 		var (
-			jobs   = []task.Task{task.BestBuy}
-			jobErr error
+			jobs = []task.Task{task.BestBuy}
 		)
 		for _, job := range jobs {
-			ctx := context.Background()
-			log.Infof(ctx, "start collector! %s data...", job.String())
-			jobErr = sdl.doCollect(ctx, job)
-			if jobErr != nil {
-				log.Errorf(ctx, "run collect job error: %s", jobErr.Error())
-				return
+			jobFailed := sdl.doCollect(context.Background(), job)
+			if jobFailed != nil {
+				log.Errorf(nil, "failed to collect product info: %v", jobFailed)
 			}
-			log.Infof(ctx, "done collector! %s data...", job.String())
 		}
 	})
 	if err != nil {
@@ -74,18 +69,20 @@ func (sdl *Scheduler) Close() {
 	sdl.wg.Wait()
 }
 
-func (sdl *Scheduler) doCollect(ctx context.Context, t task.Task) error {
+func (sdl *Scheduler) doCollect(ctx context.Context, job task.Task) error {
 	var (
 		clt    site.Collector
 		err    error
 		result *task.Result
 	)
-	clt = makeFactory(t)
+	log.Infof(ctx, "run collector! %s data...", job.String())
+	clt = makeFactory(job)
 	result, err = clt.Inquiry(ctx)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 	sdl.resultQueue.Submit(result)
+	log.Infof(ctx, "done collector! %s data...", job.String())
 	return nil
 }
 

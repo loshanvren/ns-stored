@@ -9,7 +9,8 @@ import (
 func main() {
 	log.Infof(nil, "starting monitor ... ")
 	// 启动 DataFilter (单例)
-	pipeline.NewDataFilter()
+	df := pipeline.NewDataFilter()
+	go df.Do()
 	// 启动调度器
 	scheduler := schedule.NewScheduler()
 	defer scheduler.Close()

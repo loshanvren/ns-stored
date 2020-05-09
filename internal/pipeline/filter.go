@@ -1,11 +1,12 @@
 package pipeline
 
 import (
+	"fmt"
 	"github.com/Gssssssssy/ns-stored/internal/queue"
 	"github.com/Gssssssssy/ns-stored/pkg/alarm/email"
 	"github.com/Gssssssssy/ns-stored/pkg/log"
-	"github.com/pkg/errors"
 	"sync"
+	"time"
 )
 
 var once sync.Once
@@ -19,21 +20,25 @@ type dataFilter struct {
 }
 
 // Do 永久阻塞，处理采集结果
-func (df *dataFilter) Do() (err error) {
-	job := df.resultQ.Get()
-	if job != nil {
-		if job.IsAlarm {
-			if df.emCnt < emailLimitCount {
-				err = email.ServicePoint.Do(nil, job)
-				if err != nil {
-					return errors.WithStack(err)
+func (df *dataFilter) Do() {
+	for {
+		job := df.resultQ.Get()
+		if job != nil {
+			if job.IsAlarm {
+				if df.emCnt < emailLimitCount {
+					err := email.ServicePoint.Do(nil, job)
+					if err != nil {
+						log.Errorf(nil, "failed to send email: %v", err)
+						panic(err)
+					}
+					log.Infof(nil, "send email succeed, job=%v", job)
 				}
-				log.Infof(nil, "send email succeed, job=%v", job)
+				df.emCnt++
 			}
-			df.emCnt++
 		}
+		fmt.Println(job)
+		time.Sleep(500 * time.Millisecond)
 	}
-	return nil
 }
 
 func NewDataFilter() *dataFilter {
