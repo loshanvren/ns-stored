@@ -1,7 +1,6 @@
 package pipeline
 
 import (
-	"fmt"
 	"github.com/Gssssssssy/ns-stored/internal/queue"
 	"github.com/Gssssssssy/ns-stored/pkg/alarm/email"
 	"github.com/Gssssssssy/ns-stored/pkg/log"
@@ -36,7 +35,6 @@ func (df *dataFilter) Do() {
 				df.emCnt++
 			}
 		}
-		fmt.Println(job)
 		time.Sleep(500 * time.Millisecond)
 	}
 }
