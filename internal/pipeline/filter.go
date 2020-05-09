@@ -18,7 +18,7 @@ type dataFilter struct {
 	emCnt   uint32
 }
 
-// Do 永久阻塞，处理采集结果
+// Do dead loop 处理采集结果
 func (df *dataFilter) Do() {
 	for {
 		job := df.resultQ.Get()
