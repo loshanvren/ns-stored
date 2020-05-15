@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"github.com/Gssssssssy/ns-stored/internal/site"
 	"github.com/Gssssssssy/ns-stored/internal/task"
+	"github.com/Gssssssssy/ns-stored/pkg/log"
 	"github.com/avast/retry-go"
 	"github.com/gocolly/colly"
+	"github.com/kr/pretty"
 	"github.com/pkg/errors"
 	"strconv"
 	"time"
@@ -35,6 +37,7 @@ type inquiryResponse struct {
 		Name                string  `json:"name"`
 		SalePrice           float64 `json:"salePrice"`
 		InStoreAvailability bool    `json:"inStoreAvailability"`
+		OnlineAvailability  bool    `json:"onlineAvailability"`
 	} `json:"products"`
 }
 
@@ -46,6 +49,7 @@ func doInquiry(_ context.Context) (*task.Result, error) {
 		result             = &task.Result{IsAlarm: false}
 	)
 	c.OnResponse(func(response *colly.Response) {
+		fmt.Printf("%# v\n", pretty.Formatter(string(response.Body)))
 		errOnResponse = json.Unmarshal(response.Body, &decoded)
 		if errOnResponse != nil {
 			return
@@ -57,23 +61,24 @@ func doInquiry(_ context.Context) (*task.Result, error) {
 				result.Price1 = strconv.FormatFloat(data.SalePrice, 'E', -1, 64)
 				result.Available1 = "No"
 				result.Link1 = ItemBlackDetailURL
-				if data.InStoreAvailability {
+				if data.OnlineAvailability {
 					result.Available1 = "Yes"
 					result.IsAlarm = true
+					log.Infof(nil, "%# v\n", pretty.Formatter(result))
 				}
 			case SkuIDBlueAndRed:
 				result.Name2 = data.Name
 				result.Price2 = strconv.FormatFloat(data.SalePrice, 'E', -1, 64)
 				result.Available2 = "No"
 				result.Link2 = ItemBlueAndRedDetailURL
-				if data.InStoreAvailability {
+				if data.OnlineAvailability {
 					result.Available2 = "Yes"
 					result.IsAlarm = true
+					log.Infof(nil, "%# v\n", pretty.Formatter(result))
 				}
 			default:
 			}
 			result.UpdatedTime = time.Now().Format("2006-01-02 15:04:05")
-			//log.Infof(nil, "%# v\n", pretty.Formatter(result))
 		}
 	})
 	err = retry.Do(func() error {
