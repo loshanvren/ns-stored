@@ -11,7 +11,7 @@ import (
 const (
 	ItemBlackDetailURL      = "https://www.bestbuy.com/site/nintendo-switch-32gb-console-gray-joy-con/6364253.p?skuId=6364253"
 	ItemBlueAndRedDetailURL = "https://www.bestbuy.com/site/nintendo-switch-32gb-console-neon-red-neon-blue-joy-con/6364255.p?skuId=6364255"
-	inquiryBasePath         = `/v1/products(sku="%d"|sku="%d")?format=json&show=sku,name,salePrice,inStoreAvailability,onlineAvailability,onlineAvailabilityUpdateDate&apiKey=%s`
+	inquiryBasePath         = `/v1/products(sku="%d"|sku="%d")?format=json&show=sku,name,salePrice,inStoreAvailability,inStoreAvailabilityUpdateDate,onlineAvailability,onlineAvailabilityUpdateDate&apiKey=%s`
 )
 
 // 货号
